@@ -79,6 +79,8 @@ export default class HomeScreenContainer extends Component {
             loadingLocation: true
         });
 
+        getLocationData();
+
         ipLookUp()
             .then(data => {
                 const location = data.geoAddress.results.find(address => address.types.includes("political"));
