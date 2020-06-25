@@ -159,7 +159,6 @@ export default class CurrentWeatherCard extends Component {
                     datasets: [{
                         pointRadius: 0,
                         borderColor: '#cccccc',
-                        backgroundColor: gradient,
                         data: sunriseData,
                         fill: 'blue'
                     },
@@ -176,6 +175,8 @@ export default class CurrentWeatherCard extends Component {
                     ]
                 },
                 options: Chart.helpers.merge({
+                    responsive: true,
+                    maintainAspectRatio: true,
                     legend: {
                         display: false
                     },
@@ -290,7 +291,7 @@ render() {
                             </div>
 
                             {/* sunrise sunset illustration */}
-                            <div className="sunrise-sunset--graph">
+                            <div className="sunrise-sunset--graph w-100">
                                 <canvas id="sunrise-chart"></canvas>
                             </div>
                         </section>
