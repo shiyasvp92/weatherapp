@@ -76,9 +76,17 @@ export function getCurrentHoursFormatted(timestamp) {
     let minutes = formatTS(timestamp).getMinutes();
     const ampm = hours >= 12 ? 'pm' : 'am';
     hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
+    hours = hours ? hours : 12;
     minutes = minutes < 10 ? '0' + minutes : minutes;
     return hours + ':' + minutes + '' + ampm;
+}
+
+export function getCurrentHoursOnlyFormatted(timestamp) {
+    let hours = formatTS(timestamp).getHours();
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    return hours + ampm;
 }
 
 export function getCurrentWeatherIcon(weather) {

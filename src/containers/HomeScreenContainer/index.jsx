@@ -82,7 +82,6 @@ export default class HomeScreenContainer extends Component {
         ipLookUp()
             .then(data => {
                 const location = data.geoAddress.results.find(address => address.types.includes("political"));
-                console.log(data.ipLocation);
 
                 this.setState({
                     currentLocation: location.formatted_address,
@@ -138,7 +137,7 @@ export default class HomeScreenContainer extends Component {
                 />
 
                 {/* Daily forecast list */}
-                <section className="dailyforecasts--container d-flex flex-row my-3 px-2 py-2">
+                <section className="dailyforecasts--container d-flex flex-row my-4 px-2 py-2">
                     {
                         !!loadingWeather ?
                             <LoadingSpinner />

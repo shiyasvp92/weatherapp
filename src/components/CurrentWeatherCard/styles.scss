@@ -96,6 +96,12 @@
                     }
                 }
             }
+
+            &--graph {
+                height: 20rem;
+                width: 100%;
+                position: relative;
+            }
         }
     }
 }
