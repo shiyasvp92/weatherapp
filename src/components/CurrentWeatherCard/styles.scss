@@ -1,0 +1,117 @@
+.currentweathercard {
+    &--container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 2rem;
+        box-shadow: 1px 1px 8px 1.5px #c7c7c7d1;
+        border-radius: 5px;
+        margin-bottom: 1.5rem;
+        min-height: 30rem;
+        transition: height 3s linear;
+
+        section {
+            &:not(:first-child) {
+                margin-top: 0.3rem;
+            }
+            &:not(:last-child) {
+                margin-bottom: 0.3rem;
+            }
+        }
+
+        .currentweather {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            .value {
+                line-height: 4rem;
+                font-size: 3.5rem;
+                font-weight: bolder;
+                margin-right: 0.7rem;
+            }
+            .icon {
+                img {
+                    margin-left: 0.7rem;
+                    width: 4rem;
+                    height: 4rem;
+                    // width: 100%;
+                    // height: 100%;
+                }
+            }
+        }
+
+        .pressure-humidity {
+            &--container {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            &--box {
+                background-color: #f5faff;
+                padding: 1rem 1.5rem;
+                display: flex;
+                width: 45%;
+                flex-direction: column;
+
+                &:first-child {
+                    margin-right: 0.5rem;
+                }
+                &:last-child {
+                    margin-left: 0.5rem;
+                }
+
+                &_label {
+                    font-size: 1.2rem;
+                    font-weight: bolder;
+                    margin-bottom: 0.1rem;
+                }
+                &_value {
+                    font-size: 1.2rem;
+                }
+            }
+        }
+
+        .sunrise-sunset {
+            &--container {
+                display: flex;
+                flex-direction: column;
+            }
+
+            &--values {
+                display: flex;
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+
+                .value-box {
+                    font-size: 1.2rem;
+                    &_label {
+                        font-weight: bold;
+                    }
+                    &_value {
+                        color: #666667;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.chartWrapper {/* w w w. j a v  a2 s.co  m*/
+    position: relative;
+    overflow-x: scroll;
+ }
+ .chartWrapper > canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events:none;
+ }
+ .chartAreaWrapper {
+    width: 2500px;
+    overflow-x: scroll;
+ }
+ 

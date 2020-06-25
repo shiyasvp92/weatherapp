@@ -1,0 +1,77 @@
+.searchbox {
+    &--container {
+        padding: 1.2rem 0.8rem;
+        box-shadow: 1px 1px 8px 1.5px #c7c7c7d1;
+        border-radius: 5px;
+
+        span.glyphicon {
+            font-size: 1.7rem;
+            color: #000001;
+        }
+
+        &.searchmode {
+            border: 1px solid #3DA9E9;
+        }
+    }
+
+    &--input {
+        outline: hidden;
+        border: 0;
+        font-size: 1.4rem;
+        line-height: 1.5rem;
+        font-weight: bold;
+        &:focus,
+        &:active {
+            outline: none;
+        }
+    }
+
+    &--dropdown {
+        .location-dropdown-menu {
+            border-radius: 5px;
+            border: 0;
+
+            .result-item {
+                padding: 1.2rem;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                font-size: 1.4rem;
+                justify-content: space-between;
+
+                &:not(:last-child) {
+                    border-bottom: 1px solid #A1A1A2;
+                }
+
+                .result-location {
+                }
+
+                .result-weather {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    &--values {
+                        font-size: 1.2rem;
+                        line-height: 1.2rem;
+                        text-align: right;
+                        margin-right: .3rem;
+
+                        &_temp {
+                            font-weight: bold;
+                        }
+                        &_description {
+                        }
+                    }
+
+                    &--icon {
+                        margin-left: 0.5rem;
+                        img {
+                            width: 2.5rem;
+                            height: 2.5rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,27 @@
+.dailyforecasts{
+    &--card{
+        &__container {
+            text-align: center;
+            font-size: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 5.5rem;
+            padding: .3rem;
+            margin: .2rem .5rem;
+
+            .weather-icon {
+                img {
+                    width: 3rem;
+
+                }
+            }
+
+            .description {
+                text-transform: capitalize;
+                font-size: 1.2rem;
+            }
+        }
+    }
+}
