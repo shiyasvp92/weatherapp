@@ -71,6 +71,7 @@ export default class HomeScreenContainer extends Component {
                 this.setState({
                     currentWeather: data.current,
                     dailyForecast: data.daily,
+                    selectedDt: data.daily[0].dt,
                     hourlyForecast: data.hourly,
                     loadingWeather: false
                 })
