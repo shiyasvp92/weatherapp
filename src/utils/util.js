@@ -89,6 +89,13 @@ export function getCurrentHoursOnlyFormatted(timestamp) {
     return hours + ampm;
 }
 
+export function getCurrentHours(timestamp) {
+    let hours = formatTS(timestamp).getHours();
+    let minutes = formatTS(timestamp).getMinutes();
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    return parseFloat(hours + '.' + minutes);
+}
+
 export function getCurrentWeatherIcon(weather) {
     return <img src={(weatherIcons[weather.toLowerCase()] || weatherIcons['other'])} />
 }

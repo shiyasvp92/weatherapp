@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Line } from 'react-chartjs-2';
-import Chart from "chart.js";
+import { Chart, Line } from 'react-chartjs-2';
 
 import { weatherIcons } from "../../utils/constants";
 import { getCurrentHoursFormatted, getCurrentWeatherIcon, getCurrentHoursOnlyFormatted } from "../../utils/util";
@@ -21,12 +20,12 @@ const options = {
                 drawBorder: false,
             },
             ticks: {
-                callback: function (value, index, values) {
-                    return `${value}°`;
-                },
                 minor: {
                     fontStyle: 'bold'
-                }
+                },
+                autoSkip: false,
+                maxRotation: 0,
+                minRotation: 0
             }
         }],
         yAxes: [{
@@ -72,13 +71,11 @@ export default class CurrentWeatherCard extends Component {
 
     componentDidMount() {
         this.initForecastChart();
-        this.initSunriseChart();
     }
 
     componentDidUpdate(prevProps, prevState) {
         if ((prevProps.currentWeather.dt == undefined && this.props.currentWeather.dt) || (prevProps.currentWeather.dt !== this.props.currentWeather.dt)) {
             this.initForecastChart();
-            this.initSunriseChart();
         }
     }
 
@@ -112,12 +109,12 @@ export default class CurrentWeatherCard extends Component {
         const { hourlyForecast } = this.props;
 
         const temperatures = hourlyForecast.map(forecast => forecast.temp);
-        const time = hourlyForecast.map(forecast => getCurrentHoursFormatted(forecast.dt))
+        const time = hourlyForecast.map((forecast, i) => [temperatures[i] + "°", getCurrentHoursFormatted(forecast.dt)])
 
         this.setState({
             chartData: {
                 ...this.state.chartData,
-                labels: temperatures,
+                labels: time,
                 datasets: [
                     {
                         ...this.state.chartData.datasets[0],
@@ -128,180 +125,110 @@ export default class CurrentWeatherCard extends Component {
         })
     }
 
-    initSunriseChart() {
-        const { hourlyForecast } = this.props;
+    render() {
+        const { currentWeather: { temp, weather, pressure, humidity, sunrise, sunset }, loading } = this.props;
+        const { chartData, chartOptions } = this.state;
 
-        const temperatures = hourlyForecast.map(forecast => forecast.temp);
-        const time = hourlyForecast.map(forecast => getCurrentHoursOnlyFormatted(forecast.dt))
-
-        const sunriseData = [
-            temperatures[time.findIndex(i => i === '6am')],
-            temperatures[time.findIndex(i => i === '10am')],
-            temperatures[time.findIndex(i => i === '1pm')],
-            temperatures[time.findIndex(i => i === '5pm')],
-            temperatures[time.findIndex(i => i === '8pm')],
-        ];
-
-        const averageTemp = sunriseData.reduce((sum, temp) => sum+temp, 0)/5;
-
-        var ctx = document.getElementById('sunrise-chart')
-        if (ctx) {
-            ctx = ctx.getContext('2d');
-
-            var gradient = ctx.createLinearGradient(0, 0, 0, 500);
-            gradient.addColorStop(0, '#FEE6B8');
-            gradient.addColorStop(0.8, '#FFFFFF');
-            gradient.addColorStop(1, '#ffffff00');
-
-            var myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['6am', '', '1pm', '', '8pm'],
-                    datasets: [{
-                        pointRadius: 0,
-                        borderColor: '#cccccc',
-                        data: sunriseData,
-                        fill: 'blue'
-                    },
-                    {
-                        type: 'line',
-                        data: [averageTemp, averageTemp, averageTemp, averageTemp, averageTemp],
-                        backgroundColor: 'transparent',
-                        pointRadius: 0,
-                        backgroundColor: '#666667',
-                        borderColor: '#cccccc',
-                        borderWidth: 1,
-                        order: 1
-                    }
-                    ]
-                },
-                options: Chart.helpers.merge({
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                    xAxes: [{
-                        gridLines: {
-                            drawBorder: false,
-                        }
-                    }],
-                    yAxes: [{
-                        gridLines: {
-                            display: false,
-                        },
-                        ticks: {
-                            display: false
-                        }
-                    }]
-                },
-                })
-        });
-    }
-}
-
-render() {
-    const { currentWeather: { temp, weather, pressure, humidity, sunrise, sunset }, loading } = this.props;
-    const { chartData, chartOptions } = this.state;
-
-    return (
-        <section className="currentweathercard--container">
-            {
-                !loading ?
-                    <>
-                        {/* Current weather value and icon */}
-                        <section className="currentweather">
-                            <span className="value">
-                                {temp}°C
+        return (
+            <section className="currentweathercard--container">
+                {
+                    !loading ?
+                        <>
+                            {/* Current weather value and icon */}
+                            <section className="currentweather">
+                                <span className="value">
+                                    {temp}°C
                                 </span>
-                            <span className="icon">
-                                {
-                                    weather &&
-                                    getCurrentWeatherIcon(weather[0].main)
-                                }
-                            </span>
-                        </section>
-                        {/* Current weather section ends */}
+                                <span className="icon">
+                                    {
+                                        weather &&
+                                        getCurrentWeatherIcon(weather[0].main)
+                                    }
+                                </span>
+                            </section>
+                            {/* Current weather section ends */}
 
 
-                        {/* Hourly forecast values */}
-                        <section className="hourly-forecast-chart">
-                            <div className="chartWrapper">
-                                <div className="chartAreaWrapper">
-                                    <Line
-                                        ref={this.chartReference}
-                                        id="chart"
-                                        options={chartOptions}
-                                        data={chartData}
-                                        redraw
+                            {/* Hourly forecast values */}
+                            <section className="hourly-forecast-chart">
+                                <div className="chartWrapper">
+                                    <div className="chartAreaWrapper">
+                                        <Line
+                                            ref={this.chartReference}
+                                            id="chart"
+                                            options={chartOptions}
+                                            data={chartData}
+                                            redraw
+                                        />
+                                    </div>
+                                </div>
+                            </section>
+                            {/* Hourly forecast section ends */}
+
+                            {/* pressure and humidity values */}
+                            <section className="pressure-humidity--container">
+                                {/* pressure */}
+                                <div className="pressure-humidity--box">
+                                    <div className="pressure-humidity--box_label">
+                                        Pressure
+                                    </div>
+                                    <div className="pressure-humidity--box_value">
+                                        {pressure} hpa
+                                    </div>
+                                </div>
+                                {/* pressure ends */}
+
+                                {/* humidity */}
+                                <div className="pressure-humidity--box">
+                                    <div className="pressure-humidity--box_label">
+                                        Humidity
+                                    </div>
+                                    <div className="pressure-humidity--box_value">
+                                        {humidity} %
+                                    </div>
+                                </div>
+                                {/* humidity ends */}
+                            </section>
+                            {/* pressure and humidity section ends */}
+
+                            {/* sunrise sunset values */}
+                            <section className="sunrise-sunset--container">
+                                <div className="sunrise-sunset--values">
+                                    {/* sunrise */}
+                                    <div className="sunrise value-box">
+                                        <div className="value-box_label">
+                                            Sunrise
+                                        </div>
+                                        <div className="value-box_value">
+                                            {getCurrentHoursFormatted(sunrise)}
+                                        </div>
+                                    </div>
+
+                                    {/* sunset */}
+                                    <div className="sunset value-box">
+                                        <div className="value-box_label">
+                                            Sunset
+                                        </div>
+                                        <div className="value-box_value">
+                                            {getCurrentHoursFormatted(sunset)}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* sunrise sunset illustration */}
+                                <div className="sunrise-sunset--graph w-100">
+                                    <SunriseChart 
+                                        sunrise={sunrise}
+                                        sunset={sunset}
                                     />
                                 </div>
-                            </div>
-                        </section>
-                        {/* Hourly forecast section ends */}
-
-                        {/* pressure and humidity values */}
-                        <section className="pressure-humidity--container">
-                            {/* pressure */}
-                            <div className="pressure-humidity--box">
-                                <div className="pressure-humidity--box_label">
-                                    Pressure
-                                    </div>
-                                <div className="pressure-humidity--box_value">
-                                    {pressure} hpa
-                                    </div>
-                            </div>
-                            {/* pressure ends */}
-
-                            {/* humidity */}
-                            <div className="pressure-humidity--box">
-                                <div className="pressure-humidity--box_label">
-                                    Humidity
-                                    </div>
-                                <div className="pressure-humidity--box_value">
-                                    {humidity} %
-                                    </div>
-                            </div>
-                            {/* humidity ends */}
-                        </section>
-                        {/* pressure and humidity section ends */}
-
-                        {/* sunrise sunset values */}
-                        <section className="sunrise-sunset--container">
-                            <div className="sunrise-sunset--values">
-                                {/* sunrise */}
-                                <div className="sunrise value-box">
-                                    <div className="value-box_label">
-                                        Sunrise
-                                        </div>
-                                    <div className="value-box_value">
-                                        {getCurrentHoursFormatted(sunrise)}
-                                    </div>
-                                </div>
-
-                                {/* sunset */}
-                                <div className="sunset value-box">
-                                    <div className="value-box_label">
-                                        Sunset
-                                        </div>
-                                    <div className="value-box_value">
-                                        {getCurrentHoursFormatted(sunset)}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* sunrise sunset illustration */}
-                            <div className="sunrise-sunset--graph w-100">
-                                <SunriseChart />
-                            </div>
-                        </section>
-                        {/* sunrise sunset section ends */}
-                    </>
-                    :
-                    <LoadingSpinner />
-            }
-        </section>
-    )
-}
+                            </section>
+                            {/* sunrise sunset section ends */}
+                        </>
+                        :
+                        <LoadingSpinner />
+                }
+            </section>
+        )
+    }
 }
