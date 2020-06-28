@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import './styles.scss';
 import pinSvg from "../../assets/images/pin.svg";
-import { findLocationWeather } from '../../utils/services/weather';
+import { findLocationWeather, getLocationWeatherLatLon } from '../../utils/services/weather';
 import { weatherIcons } from '../../utils/constants';
 import { getCurrentWeatherIcon } from '../../utils/util';
+import { findPlaceAutocomplete } from '../../utils/services/places';
+import LoadingSpinner from '../LoadingSpinner';
 
 export default class SearchBox extends Component {
 
@@ -35,7 +37,7 @@ export default class SearchBox extends Component {
             return;
         }
 
-        if (this.state.searchMode) this.onCloseSearch();            
+        if (this.state.searchMode) this.onCloseSearch();
     }
 
     onSearchTextChange(e) {
@@ -62,23 +64,88 @@ export default class SearchBox extends Component {
     }
 
     onSearchLocation(location) {
-        findLocationWeather(location)
-            .then(data => {
+        let service = new window.google.maps.places.AutocompleteService();
+        service.getQueryPredictions({ input: location }, (predictions, status) => {
+            if (status == 'OK') {
+                console.log(predictions)
+                const result = predictions.map(place => ({
+                    name: place.description,
+                    place_id: place.place_id,
+                    weather: {
+                        loading: true,
+                        error: false
+                    },
+                    latLon: {
+                        lat: 0,
+                        lon: 0,
+                        error: true
+                    }
+                }))
+
                 this.setState({
-                    locationData: data.list,
+                    locationData: result,
                     loadingLocations: false
+                }, () => {
+                    result.forEach((location, index) => {
+                        this.setLocationWeather(location, index)
+                    });
                 });
-            })
-            .catch(error => {
-                console.error(error);
-                this.setState({
-                    loadingLocations: false
-                });
-            })
+            }
+        });
+    }
+
+    setLocationWeather(location, index) {
+        var geocoder = new window.google.maps.Geocoder;
+        geocoder.geocode({ 'placeId': location.place_id }, (results, status) => {
+            if (status === 'OK') {
+                const lat = results[0].geometry.location.lat();
+                const lon = results[0].geometry.location.lng();
+
+                getLocationWeatherLatLon(lat, lon)
+                    .then((data) => {
+                        const weather = {
+                            temp: data.main.temp,
+                            description: data.weather[0].main,
+                            loading: false,
+                        };
+
+                        const latLon = {
+                            lat,
+                            lon,
+                            error: false
+                        }
+
+                        this.replaceLocationData(weather, latLon, index);
+                    });
+            } else {
+                const weather = {
+                    loading: false,
+                    error: true
+                }
+
+                this.replaceLocationData(weather, { error: true }, index);
+            }
+        });
+
+    }
+
+    replaceLocationData(weather, latLon, index) {
+        const newLocationData = [...this.state.locationData];
+        newLocationData[index] = {
+            ...newLocationData[index],
+            weather,
+            latLon
+        }
+
+        this.setState({
+            locationData: newLocationData
+        })
     }
 
     onSelectLocation(location) {
-        this.props.onLocationSelect(location);
+        if(!location.latLon.error) {
+            this.props.onLocationSelect(location);
+        }
         this.onCloseSearch();
     }
 
@@ -125,8 +192,8 @@ export default class SearchBox extends Component {
                                 locationData && locationData.length > 0 ?
                                     locationData.map(location => (
                                         <div
-                                            key={location.id}
-                                            className="dropdown-item result-item"
+                                            key={location.place_id}
+                                            className={("dropdown-item result-item ") + (location.latLon.error ? " disabled" : "")}
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -134,22 +201,34 @@ export default class SearchBox extends Component {
                                             }}
                                         >
                                             <div className="result-location">
-                                                <span className="font-weight-bold">{location.name}</span>, {location.sys.country}
+                                                <span className="font-weight-bold">{location.name}</span>
                                             </div>
 
-                                            <div className="result-weather">
-                                                <div className="result-weather--values">
-                                                    <div className="result-weather--values_temp">
-                                                        {location.main.temp}° C
-                                                </div>
-                                                    <div className="result-weather--values_description">
-                                                        {location.weather[0] && location.weather[0].main}
+                                            {
+                                                !!location.weather.loading ?
+                                                    <div>
+                                                        <LoadingSpinner />
                                                     </div>
-                                                </div>
-                                                <div className="result-weather--icon">
-                                                    {getCurrentWeatherIcon(location.weather[0] && location.weather[0].main)}
-                                                </div>
-                                            </div>
+                                                    :
+                                                        !location.weather.error ? 
+                                                            <div className="result-weather">
+                                                                <div className="result-weather--values">
+                                                                    <div className="result-weather--values_temp">
+                                                                        {location.weather.temp}° C
+                                                                </div>
+                                                                    <div className="result-weather--values_description">
+                                                                        {location.weather.description}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="result-weather--icon">
+                                                                    {getCurrentWeatherIcon(location.weather.description)}
+                                                                </div>
+                                                            </div>
+                                                        :
+                                                            <div>
+                                                                Error
+                                                            </div>
+                                            }
                                         </div>
                                     ))
                                     :

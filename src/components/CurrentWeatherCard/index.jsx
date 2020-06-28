@@ -7,6 +7,7 @@ import { getCurrentHoursFormatted, getCurrentWeatherIcon, getCurrentHoursOnlyFor
 
 import './styles.scss';
 import LoadingSpinner from '../LoadingSpinner';
+import SunriseChart from '../SunriseChart';
 
 const options = {
     responsive: true,
@@ -292,7 +293,7 @@ render() {
 
                             {/* sunrise sunset illustration */}
                             <div className="sunrise-sunset--graph w-100">
-                                <canvas id="sunrise-chart"></canvas>
+                                <SunriseChart />
                             </div>
                         </section>
                         {/* sunrise sunset section ends */}

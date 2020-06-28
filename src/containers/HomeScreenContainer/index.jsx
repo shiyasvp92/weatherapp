@@ -8,58 +8,6 @@ import CurrentWeatherCard from '../../components/CurrentWeatherCard';
 import { getWeatherForecast } from '../../utils/services/weather';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
-const forecasts = [
-    {
-        day: 'Friday',
-        maxTemp: 28,
-        minTemp: 21,
-        weatherCondition: 'Sunny',
-        id: 0
-    },
-    {
-        day: 'Saturday',
-        maxTemp: 32,
-        minTemp: 30,
-        weatherCondition: 'Sunny',
-        id: 1
-    },
-    {
-        day: 'Sunday',
-        maxTemp: 21,
-        minTemp: 29,
-        weatherCondition: 'Clouds',
-        id: 2
-    },
-    {
-        day: 'Monday',
-        maxTemp: 18,
-        minTemp: 31,
-        weatherCondition: 'Clouds',
-        id: 3
-    },
-    {
-        day: 'Tuesday',
-        maxTemp: 28,
-        minTemp: 21,
-        weatherCondition: 'Rain',
-        id: 4
-    },
-    {
-        day: 'Wednesday',
-        maxTemp: 28,
-        minTemp: 21,
-        weatherCondition: 'Mist',
-        id: 5
-    },
-    {
-        day: 'Thursday',
-        maxTemp: 28,
-        minTemp: 21,
-        weatherCondition: 'Rain',
-        id: 6
-    }
-]
-
 export default class HomeScreenContainer extends Component {
 
     constructor(props) {
@@ -71,6 +19,7 @@ export default class HomeScreenContainer extends Component {
             currentWeather: {},
             dailyForecast: [],
             hourlyForecast: [],
+            selectedDt: null
         }
     }
 
@@ -83,23 +32,32 @@ export default class HomeScreenContainer extends Component {
 
         ipLookUp()
             .then(data => {
-                const location = data.geoAddress.results.find(address => address.types.includes("political"));
-
-                this.setState({
-                    currentLocation: location.formatted_address,
-                    loadingLocation: false,
-                    loadingWeather: true
-                }, () => {
-                    this.onFetchForecast(data.ipLocation.lat, data.ipLocation.lon);
-                })
+                if(data) {
+                    const location = data.geoAddress.results.find(address => address.types.includes("political"));
+    
+                    this.setState({
+                        currentLocation: location.formatted_address,
+                        loadingLocation: false,
+                        loadingWeather: true,
+                        currentLatLon: {
+                            lat: data.ipLocation.lat,
+                            lon: data.ipLocation.lon
+                        }
+                    }, () => {
+                        this.onFetchForecast(data.ipLocation.lat, data.ipLocation.lon);
+                    })
+                }
             });
     }
 
     onLocationSelect(location) {
         this.setState({
-            currentLocation: location.name + ', ' + location.sys.country
+            currentLocation: location.name,
+            currentLatLon: {
+                ...location.latLon
+            }
         })
-        this.onFetchForecast(location.coord.lat, location.coord.lon);
+        this.onFetchForecast(location.latLon.lat, location.latLon.lon);
     }
 
     onFetchForecast(lat, lon) {
@@ -126,9 +84,20 @@ export default class HomeScreenContainer extends Component {
             });
     }
 
+    onDailyForecastClick(forecast) {
+        this.setState({
+            selectedDt: forecast.dt,
+            currentWeather: {
+                ...forecast,
+                temp: forecast.temp.day,
+                feels_like: forecast.feels_like.day
+            }
+        })
+    }
+
     render() {
         const { dailyForecast, hourlyForecast, currentWeather, loadingWeather, loadingLocation } = this.state;
-        const { currentLocation } = this.state;
+        const { currentLocation, selectedDt } = this.state;
 
         return (
             <div className="home-screen__container container">
@@ -149,6 +118,8 @@ export default class HomeScreenContainer extends Component {
                                     key={forecast.dt}
                                     forecast={forecast}
                                     loading={loadingWeather}
+                                    selectedDt={selectedDt}
+                                    onDailyClick={(forecast) => this.onDailyForecastClick(forecast)}
                                 />
                             ))
                     }

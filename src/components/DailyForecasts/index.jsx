@@ -7,15 +7,18 @@ import { getCurrentWeekday, getCurrentWeatherIcon } from '../../utils/util';
 
 export default class DailyForecasts extends Component {
     render() {
-        const { forecast: { dt, temp, weather } } = this.props;
+        const { forecast: { dt, temp, weather }, selectedDt } = this.props;
 
         return (
-            <div className="dailyforecasts--card__container">
+            <div
+                className={("dailyforecasts--card__container ") + (selectedDt === dt ? " active" : "" )}
+                onClick={() => this.props.onDailyClick(this.props.forecast)}
+            >
                 <div className="day font-weight-bold">
                     {getCurrentWeekday(dt).substring(0, 3)}
                 </div>
                 <div className="weather w-100 d-flex flex-row justify-content-between">
-                    <span className="font-weight-bold">
+                    <span className="font-weight-bold mr-2">
                         {parseInt(temp.max)}°
                                     </span>
                     <span>

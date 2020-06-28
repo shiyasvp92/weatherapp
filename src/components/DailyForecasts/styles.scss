@@ -7,9 +7,9 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            width: 5.5rem;
-            padding: .3rem;
             margin: .2rem .5rem;
+            padding: 1rem 1rem;
+            box-sizing: border-box;
 
             .weather-icon {
                 img {
@@ -21,6 +21,10 @@
             .description {
                 text-transform: capitalize;
                 font-size: 1.2rem;
+            }
+
+            &.active {
+                border: 2px solid #3DA9E9;
             }
         }
     }
