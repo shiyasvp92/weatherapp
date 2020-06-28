@@ -201,7 +201,12 @@ export default class SearchBox extends Component {
                                             }}
                                         >
                                             <div className="result-location">
-                                                <span className="font-weight-bold">{location.name}</span>
+                                                {
+                                                    location.name &&
+                                                        <>
+                                                            <span className="font-weight-bold">{searchText}</span><span>{location.name.substring(searchText.length, location.name.length-1)}</span>
+                                                        </>
+                                                }
                                             </div>
 
                                             {
