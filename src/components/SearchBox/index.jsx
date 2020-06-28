@@ -67,7 +67,6 @@ export default class SearchBox extends Component {
         let service = new window.google.maps.places.AutocompleteService();
         service.getQueryPredictions({ input: location }, (predictions, status) => {
             if (status == 'OK') {
-                console.log(predictions)
                 const result = predictions.map(place => ({
                     name: place.description,
                     place_id: place.place_id,

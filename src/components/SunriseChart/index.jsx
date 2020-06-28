@@ -95,7 +95,6 @@ export default class SunriseChart extends Component {
             .tickSize(50);
         svg.append("g").call(xAxis).attr("id", "bottom-axis").attr("transform", "translate(0," + height / 2 + ")");
 
-        console.log(getCurrentHours(this.props.sunset));
 
         var xAxisTop = d3.axisTop(xScale)
             .tickValues([getCurrentHours(this.props.sunset) - 4])
