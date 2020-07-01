@@ -24,6 +24,15 @@
             stroke-width: 2px;
         }
     }
+
+    &.dark {
+        .tick {
+            line {
+                stroke: #cccccc;
+            }
+        }
+    }
+
     .domain {
         opacity: 0;
     }

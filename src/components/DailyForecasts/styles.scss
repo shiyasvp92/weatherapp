@@ -11,6 +11,15 @@
             padding: 1rem 1rem;
             box-sizing: border-box;
 
+            .weather {
+                .maxTemp {
+                    color: #000001;
+                }
+                .minTemp {
+                    color: #656566;
+                }
+            }
+
             .weather-icon {
                 img {
                     width: 3rem;
@@ -21,6 +30,7 @@
             .description {
                 text-transform: capitalize;
                 font-size: 1.2rem;
+                color: #646465;
             }
 
             &.active {

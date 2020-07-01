@@ -18,12 +18,12 @@ export default class DailyForecasts extends Component {
                     {getCurrentWeekday(dt).substring(0, 3)}
                 </div>
                 <div className="weather w-100 d-flex flex-row justify-content-between">
-                    <span className="font-weight-bold mr-2">
+                    <span className="font-weight-bold mr-2 maxTemp">
                         {parseInt(temp.max)}°
-                                    </span>
-                    <span>
+                    </span>
+                    <span className="minTemp">
                         {parseInt(temp.min)}°
-                                    </span>
+                    </span>
                 </div>
                 <div className="weather-icon my-1">
                     {
