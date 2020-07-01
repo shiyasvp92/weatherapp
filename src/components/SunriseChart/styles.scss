@@ -38,6 +38,16 @@
     }
 }
 
+#sun {
+    path.sun-leg {
+        fill: #F3AF36;
+
+        &.dark {
+            fill: #666667;
+        }
+    }
+}
+
 #bottom-axis {
     .domain,
     line {
