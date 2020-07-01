@@ -76,7 +76,6 @@ export default class SunriseChart extends Component {
         //add x axis
         var xScale = d3.scaleLinear().rangeRound([0, width]).domain([6, d3.max(dataset, function (d) { return d[0]; })]);//scaleBand is used for  bar chart
 
-        console.log(xScale, yScale)
         var area = d3.area()
             .curve(d3.curveMonotoneX)
             .x1(function (d) { return xScale(d[0]); })
